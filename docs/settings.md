@@ -21,3 +21,19 @@
 
 ### Versions Path
 `versions_path` - A string containing a path to wherever the user has requested that the various godot versions should be stored.
+
+
+### Downloaded Versions
+`downloaded_versions` - An array containing all of the versions downloaded. Looks like:
+```json
+[
+  {
+    version: "vX.X.X",
+    os: "[win32, win64, osx, linux64, linux32, android]",
+    release: "[alpha, rc3, stable, etc.]",
+    mono: "[boolean]",
+    file: "[name-of-the-executable]"
+  }
+  ...
+]
+```
