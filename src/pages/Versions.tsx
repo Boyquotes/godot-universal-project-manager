@@ -16,6 +16,10 @@ export default function Versions() {
       mono: false,
     }).then((result) => {
       console.log(result)
+    })
+    .catch((err) => {
+      console.log("shit")
+      console.log(err);
     });
   }
 
@@ -48,7 +52,8 @@ export default function Versions() {
           <input id="show-mono" type="checkbox"/>
         </div>
 
-        <button className="submit">Reload</button>
+        <button className="submit" onClick={handleClick}>Reload</button>
+        <button className="submit" onClick={handleDebug}>Debug</button>
       </div>
       <div className="versions">
         <div id="installed-versions" className="versions-split">

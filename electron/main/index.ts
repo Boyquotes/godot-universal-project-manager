@@ -102,7 +102,7 @@ ipcMain.handle("get-setting", async (event, key) => {
   if (store.has(key)) {
     return Promise.resolve(store.get(key));
   }
-  return null;
+  return Promise.reject();
 });
 
 // handle requests to crawl the tuxfamily website
@@ -134,7 +134,7 @@ ipcMain.on("crawl-tuxfamily", async (event, args) => {
 
   win.webContents.send("set-statusbar-name", "");
 
-  return Promise.resolve();
+  return Promise.resolve(true);
 });
 
 interface DownloadGodotArgs {
@@ -168,7 +168,11 @@ ipcMain.handle("download-godot", async (event, args: DownloadGodotArgs) => {
   }
 
   // get the directory to download the file to from the versions-folder setting
-  const versions_folder = store.get("versions_path");
+  const versions_folder: string | null = store.get("versions_path");
+  if (versions_folder === null) {
+    console.log("Versions folder not set");
+    return Promise.resolve(false);
+  }
 
   // get the name of the downloaded file
   const file_name = link.split("/").pop();
@@ -185,20 +189,30 @@ ipcMain.handle("download-godot", async (event, args: DownloadGodotArgs) => {
   await fs.emptyDir(join(versions_folder, "temp"));
 
   // add to the installed versions setting
-  const version_data = {
+  interface InstalledVersion {
+    file: string;
+    version: string;
+    os: string;
+    release: string;
+    mono: boolean;
+  }
+  const version_data: InstalledVersion = {
     file: file_name,
     version: args.version,
     os: args.os,
     release: args.release,
     mono: args.mono,
   };
-  let installed_versions = store.get("installed_versions");
-  if (installed_versions === null) {
-    store.set("installed_versions", version_data);
+  let installed_versions: InstalledVersion[] | undefined = store.get(
+    "downloaded_versions"
+  );
+  if (installed_versions) {
+    installed_versions.push(version_data);
+    store.set("downloaded_versions", installed_versions);
   } else {
-    installed_versions.push(file_name);
-    store.set("installed_versions", version_data);
+    store.set("downloaded_versions", [version_data]);
   }
+  console.log("Store set properly!");
 
   return Promise.resolve(true);
 });

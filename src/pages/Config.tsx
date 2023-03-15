@@ -54,7 +54,14 @@ export default function Config() {
         justifyContent: "center",
         margin: "10px",
       }}>
+        
         <button className="submit" onClick={onSubmit}>Update Settings</button>
+        <button className="submit" onClick={() => {
+            ipcRenderer.invoke("store-setting", {
+              key: "downloaded_versions",
+              value: [],
+            })
+          }}>Reset the things</button>
       </div>
     </>
   );
