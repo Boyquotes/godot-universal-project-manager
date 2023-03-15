@@ -161,11 +161,11 @@ ipcMain.handle("download-godot", async (event, args: DownloadGodotArgs) => {
   // return null if no link was found
   if (link === "") {
     console.log("no link was found");
-    return Promise.resolve(null);
+    return Promise.resolve(false);
   }
 
   // get the directory to download the file to from the versions-folder setting
-  const versions_folder = store.get("versions-path");
+  const versions_folder = store.get("versions_path");
 
   // download the zip file to the temp directory inside of the versions folder using electron-dl
   const dl = await download(BrowserWindow.getFocusedWindow(), link, {
@@ -177,6 +177,8 @@ ipcMain.handle("download-godot", async (event, args: DownloadGodotArgs) => {
 
   // delete everything in the temp directory
   await fs.emptyDir(join(versions_folder, "temp"));
+
+  return Promise.resolve(true);
 });
 
 interface OpenExplorerArgs {
