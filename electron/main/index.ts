@@ -99,7 +99,10 @@ ipcMain.handle("store-setting", async (event, args) => {
 });
 
 ipcMain.handle("get-setting", async (event, key) => {
-  return Promise.resolve(store.get(key));
+  if (store.has(key)) {
+    return Promise.resolve(store.get(key));
+  }
+  return null;
 });
 
 // handle requests to crawl the tuxfamily website
@@ -167,6 +170,9 @@ ipcMain.handle("download-godot", async (event, args: DownloadGodotArgs) => {
   // get the directory to download the file to from the versions-folder setting
   const versions_folder = store.get("versions_path");
 
+  // get the name of the downloaded file
+  const file_name = link.split("/").pop();
+
   // download the zip file to the temp directory inside of the versions folder using electron-dl
   const dl = await download(BrowserWindow.getFocusedWindow(), link, {
     directory: join(versions_folder, "temp"),
@@ -177,6 +183,22 @@ ipcMain.handle("download-godot", async (event, args: DownloadGodotArgs) => {
 
   // delete everything in the temp directory
   await fs.emptyDir(join(versions_folder, "temp"));
+
+  // add to the installed versions setting
+  const version_data = {
+    file: file_name,
+    version: args.version,
+    os: args.os,
+    release: args.release,
+    mono: args.mono,
+  };
+  let installed_versions = store.get("installed_versions");
+  if (installed_versions === null) {
+    store.set("installed_versions", version_data);
+  } else {
+    installed_versions.push(file_name);
+    store.set("installed_versions", version_data);
+  }
 
   return Promise.resolve(true);
 });
