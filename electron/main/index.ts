@@ -165,7 +165,7 @@ ipcMain.handle("download-godot", async (event, args: DownloadGodotArgs) => {
   // return null if no link was found
   if (link === "") {
     console.log("no link was found");
-    return Promise.resolve(null);
+    return Promise.resolve(false);
   }
 
   // get the directory to download the file to from the versions-folder setting
@@ -181,6 +181,8 @@ ipcMain.handle("download-godot", async (event, args: DownloadGodotArgs) => {
 
   // delete everything in the temp directory
   await fs.emptyDir(join(versions_folder, "temp"));
+
+  return Promise.resolve(true);
 });
 
 interface OpenExplorerArgs {
