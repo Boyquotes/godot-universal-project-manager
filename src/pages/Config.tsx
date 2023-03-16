@@ -49,6 +49,16 @@ export default function Config() {
           console.log(path)
       }}/>
       </div>
+      <div className="text-input">
+        <p>OS version to download</p>
+        <select className="select-input" id="os">
+            <option value="win64">Windows 64bit</option>
+            <option value="win32">Windows 32bit</option>
+            <option value="linux64">Linux 64bit</option>
+            <option value="linux32">Linux 32bit</option>
+            <option value="osx">Mac OS</option>
+          </select>
+      </div>
       <div style={{
         display: "flex",
         justifyContent: "center",

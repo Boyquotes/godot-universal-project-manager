@@ -1,9 +1,12 @@
 import * as download from 'electron-dl';
 import { ipcRenderer } from 'electron';
 import VersionBox from '@/components/VersionBox';
+import { useEffect, useState } from 'react';
 
 
 export default function Versions() {
+  
+  
   const handleClick = () => {
     ipcRenderer.send('crawl-tuxfamily');
   };
@@ -18,10 +21,34 @@ export default function Versions() {
       console.log(result)
     })
     .catch((err) => {
-      console.log("shit")
       console.log(err);
     });
   }
+
+  
+  const [crawled, setCrawled] = useState([]);
+  const [installed, setInstalled] = useState([]);
+  const reloadDownloads = () => {
+    ipcRenderer.invoke('get-setting', 'crawl_results').then((result) => {
+      console.log(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+    ipcRenderer.invoke('get-setting', 'downloaded_versions').then((result) => {
+      console.log(result);
+    }).catch((err) => {
+      console.log(err);
+    });
+  };
+
+  ipcRenderer.on('crawl-finished', reloadDownloads);
+  ipcRenderer.on('godot-downloaded', reloadDownloads);
+
+
+  useEffect(() => {
+    reloadDownloads();
+  }, []);
 
   return (
     <div className="versions-page">
@@ -57,26 +84,10 @@ export default function Versions() {
       </div>
       <div className="versions">
         <div id="installed-versions" className="versions-split">
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
-          <VersionBox version="4.5.7-beta" installed={true}/>
           
         </div>
         <div id="available-versions" className="versions-split">
-          <VersionBox version="4.5.7-beta" installed={false}/>
+          
         </div>
       </div>
     </div>

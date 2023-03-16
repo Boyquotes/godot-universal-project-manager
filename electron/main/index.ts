@@ -100,6 +100,7 @@ ipcMain.handle("store-setting", async (event, args) => {
 
 ipcMain.handle("get-setting", async (event, key) => {
   if (store.has(key)) {
+    console.log("I have it");
     return Promise.resolve(store.get(key));
   }
   return Promise.reject();
@@ -133,7 +134,7 @@ ipcMain.on("crawl-tuxfamily", async (event, args) => {
   store.set("crawl-results", setting);
 
   win.webContents.send("set-statusbar-name", "");
-
+  win.webContents.send("crawl-finished");
   return Promise.resolve(true);
 });
 
@@ -167,6 +168,8 @@ ipcMain.handle("download-godot", async (event, args: DownloadGodotArgs) => {
     return Promise.resolve(false);
   }
 
+  win.webContents.send(`Downloading ${link}...`);
+
   // get the directory to download the file to from the versions-folder setting
   const versions_folder: string | null = store.get("versions_path");
   if (versions_folder === null) {
@@ -182,6 +185,7 @@ ipcMain.handle("download-godot", async (event, args: DownloadGodotArgs) => {
     directory: join(versions_folder, "temp"),
   });
 
+  win.webContents.send(`Extracting ${file_name}...`);
   // extract the zip file to the versions folder
   await extract(dl.getSavePath(), { dir: versions_folder });
 
@@ -214,6 +218,8 @@ ipcMain.handle("download-godot", async (event, args: DownloadGodotArgs) => {
   }
   console.log("Store set properly!");
 
+  win.webContents.send("set-statusbar-name", "");
+  win.webContents.send("godot-downloaded");
   return Promise.resolve(true);
 });
 
