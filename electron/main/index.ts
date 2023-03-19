@@ -98,12 +98,11 @@ ipcMain.handle("store-setting", async (event, args) => {
   return Promise.resolve(store.set(args.key, args.value));
 });
 
-ipcMain.handle("get-setting", async (event, key) => {
+ipcMain.handle("get-setting", async (event, key: string) => {
   if (store.has(key)) {
-    console.log("I have it");
     return Promise.resolve(store.get(key));
   }
-  return Promise.reject();
+  return Promise.resolve(null);
 });
 
 // handle requests to crawl the tuxfamily website
