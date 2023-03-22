@@ -64,3 +64,12 @@ Arguments:
 
 Retruns:  
 `str` - the path of the file opened by the user
+
+
+## crawl-finished
+`ipcRenderer.on("crawl-finished")`  
+Called after `crawl-tuxfamily`. Used by reloads that need to know when a new crawl happens.
+
+## godot-downloaded
+`ipcRenderer.on("godot-downloaded")`  
+Same as `crawl-finished`, just for downloads of the godot executable.

@@ -30,6 +30,8 @@ export function parseUrl(url: string): Object | null {
     url.includes("tar") ||
     url.includes("tpz") ||
     url.includes("demos") ||
+    url.includes("web") ||
+    url.includes("server") ||
     !url.includes("godotengine") ||
     !url.includes("zip")
   ) {
@@ -72,7 +74,7 @@ export function parseUrl(url: string): Object | null {
   const osKey = {
     win32: ["win32"],
     win64: ["win64"],
-    osx: ["osx"],
+    osx: ["osx", "macos"],
     linux64: ["x86_64", "x11.64"],
     linux32: ["x86_32", "x11.32"],
     android: ["apk"],

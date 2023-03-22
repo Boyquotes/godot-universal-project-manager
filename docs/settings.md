@@ -37,3 +37,6 @@
   ...
 ]
 ```
+
+## Operating System
+`operating_system` - the operating system that the user wishes to download godot for. Can either be `osx`, `win32`, `win64`, `linux32`, or `linux64`.
