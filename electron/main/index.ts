@@ -71,6 +71,7 @@ async function createWindow() {
       // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
       nodeIntegration: true,
       contextIsolation: false,
+      devTools: true,
     },
   });
   win.removeMenu();
@@ -108,7 +109,7 @@ ipcMain.handle("get-setting", async (event, key: string) => {
 // handle requests to crawl the tuxfamily website
 ipcMain.on("crawl-tuxfamily", async (event, args) => {
   win.webContents.send("set-statusbar-name", "Finding download links...");
-  const possible_links = await crawl(true);
+  const possible_links = await crawl(false);
 
   let found_links = [];
   await possible_links.forEach(async (url, i) => {
@@ -130,7 +131,7 @@ ipcMain.on("crawl-tuxfamily", async (event, args) => {
     links: found_links,
   };
 
-  store.set("crawl-results", setting);
+  await store.set("crawl_results", setting);
 
   win.webContents.send("set-statusbar-name", "");
   win.webContents.send("crawl-finished");

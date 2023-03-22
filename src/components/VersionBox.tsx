@@ -1,11 +1,11 @@
-
 interface VersionBoxProps {
   version: string;
   installed?: boolean;
+  path: string;
 }
 
 
-export default function VersionBox({version, installed = false}: VersionBoxProps) {
+export default function VersionBox({version, path, installed = false}: VersionBoxProps) {
   return (
     <div className="version-box">
       <p>{version}</p>
@@ -13,6 +13,7 @@ export default function VersionBox({version, installed = false}: VersionBoxProps
         {installed ? <button>Open</button> : <></>}
         {installed ? <button>Uninstall</button> : <button>Install</button>}
       </div>
+      <p>{path}</p>
     </div>
   )
 }

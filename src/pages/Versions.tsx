@@ -4,10 +4,30 @@ import VersionBox from '@/components/VersionBox';
 import { useEffect, useState } from 'react';
 
 
+interface InstalledVersion {
+  version: string;
+  os: string;
+  release: string;
+  mono: boolean;
+  path: string;
+}
+interface CrawlResults {
+  date?: string;
+  links: CrawledVersion[];
+}
+interface CrawledVersion {
+  version: string;
+  os: string;
+  release: string;
+  mono: boolean;
+  url: string;
+}
+
+
 export default function Versions() {
   
   
-  const handleClick = () => {
+  const handleReload = () => {
     ipcRenderer.send('crawl-tuxfamily');
   };
 
@@ -26,29 +46,35 @@ export default function Versions() {
   }
 
   
-  const [crawled, setCrawled] = useState([]);
-  const [installed, setInstalled] = useState([]);
+  const [crawled, setCrawled] = useState<CrawlResults>({links : []});
+  const [installed, setInstalled] = useState<InstalledVersion[]>([]);
   const reloadDownloads = () => {
     ipcRenderer.invoke('get-setting', 'crawl_results').then((result) => {
-      console.log(result);
+      setCrawled((result == null) ? [] : result);
+      console.log(`Crawled is ${crawled} with the result being ${result}`);
     })
-    .catch((err) => {
-      console.log(err);
-    });
     ipcRenderer.invoke('get-setting', 'downloaded_versions').then((result) => {
-      console.log(result);
-    }).catch((err) => {
-      console.log(err);
+      setInstalled((result == null) ? [] : result);
+      console.log(`Installed is ${installed}`)
     });
   };
 
+  console.log(crawled)
+  console.log(installed)
+  const crawledElements = crawled.links.map((version: CrawledVersion) => {
+    return <VersionBox version={`v${version.version}-${version.release}${version.mono ? '-mono' : ''} for ${version.os}`} path={version.url} installed={false}/>
+  })
+  const installedElements = installed.map((version) => {
+    return <VersionBox version={`v${version.version}-${version.release}${version.mono ? '-mono' : ''} for ${version.os}`} path={version.path} installed={true}/>
+  })
+
+
   ipcRenderer.on('crawl-finished', reloadDownloads);
   ipcRenderer.on('godot-downloaded', reloadDownloads);
-
-
   useEffect(() => {
     reloadDownloads();
   }, []);
+
 
   return (
     <div className="versions-page">
@@ -79,15 +105,15 @@ export default function Versions() {
           <input id="show-mono" type="checkbox"/>
         </div>
 
-        <button className="submit" onClick={handleClick}>Reload</button>
+        <button className="submit" onClick={handleReload}>Reload</button>
         <button className="submit" onClick={handleDebug}>Debug</button>
       </div>
       <div className="versions">
         <div id="installed-versions" className="versions-split">
-          
+          {installedElements}
         </div>
         <div id="available-versions" className="versions-split">
-          
+          {crawledElements}
         </div>
       </div>
     </div>
